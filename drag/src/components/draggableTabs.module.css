@@ -1,0 +1,36 @@
+.draggableTabsWrap {
+    display: flex;
+    overflow: hidden;
+}
+
+.routeTab {
+    display: flex;
+    align-items: center;
+    height: 48px;
+    padding-inline: 20px;
+    min-width: max-content;
+    text-decoration: none;
+    border-top: 1px solid rgba(174, 182, 206, 0.20);
+    color: #7F858D;
+    gap: 10px;
+}
+
+.chestWrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 57px;
+    height: 48px;
+    border-top: 1px solid rgba(174, 182, 206, 0.20);
+}
+
+.dropdownWrap {
+    min-width: 36px;
+    height: 48px;
+    background-color: #4690E2;
+}
+
+.hide {
+    position: absolute;
+    visibility: hidden;
+}
