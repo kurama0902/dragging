@@ -17,6 +17,7 @@ import { RechnSVG } from "../SVGComponents/RechnSVG";
 import { useLayoutEffect, useRef, useState } from "react";
 
 import s from './draggableTabs.module.css';
+import { DropdownArrowSVG } from "../SVGComponents/DropdownArrowSVG";
 
 export const DraggableTabs = () => {
 
@@ -26,7 +27,9 @@ export const DraggableTabs = () => {
     }
 
     const [windowSize, setWindowSize] = useState<number>(window.innerWidth - 62 - 57 - 36);
-    const [count, setCount] = useState<number>(13);    
+    const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
+    const [margin, setMargin] = useState<number>(0);
+    const [count, setCount] = useState<number>(13);
 
     const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
 
@@ -60,7 +63,7 @@ export const DraggableTabs = () => {
 
     useLayoutEffect(() => {
 
-        if(linkRefs.current.length === 1) return;
+        if (linkRefs.current.length === 1) return;
 
         const linksWidthList = linkRefs.current.map((link) => {
             if (link) {
@@ -77,7 +80,8 @@ export const DraggableTabs = () => {
             totalWidth += width;
             count++;
         }
-        
+
+        setMargin(windowSize - totalWidth)
         setCount(count || 1);
     }, [windowSize]);
 
@@ -95,8 +99,18 @@ export const DraggableTabs = () => {
                 )
 
             })}
-            <div className={s.dropdownWrap}>
 
+            <div style={{right: margin}} className={s.dropdownWrap}>
+                <button onClick={() => {
+                    setIsDropdownShow(!isDropdownShow);
+                }} className={s.dropdownBtn}>
+                    <DropdownArrowSVG deg={isDropdownShow ? 0 : 180} />
+                </button>
+                {isDropdownShow && <div className={s.dropdown}>
+                    {routesList.slice(count, routesList.length).map((el => {
+                        return <button className={s.dropdownRouteBtn} key={el.route}>{el.route}</button>
+                    }))}
+                </div>}
             </div>
         </div>
     )
