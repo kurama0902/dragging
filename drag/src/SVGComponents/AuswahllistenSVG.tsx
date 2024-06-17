@@ -1,7 +1,7 @@
 export const AuswahllistenSVG = () => {
     return (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clip-path="url(#clip0_1_297)">
+            <g clipPath="url(#clip0_1_297)">
                 <path d="M16.0002 2.66687H4.66687V4.0002H16.0002V2.66687Z" fill="#7F858D" />
                 <path d="M16.0002 7.33313H4.66687V8.66647H16.0002V7.33313Z" fill="#7F858D" />
                 <path d="M16.0002 12H4.66687V13.3333H16.0002V12Z" fill="#7F858D" />

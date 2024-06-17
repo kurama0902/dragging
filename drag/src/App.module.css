@@ -2,7 +2,19 @@
     padding-left: 62px;
 }
 
+.dragableTabsContainer {
+    position: relative;
+}
+
 .topPaddingBlock {
     height: 69px;
     border-left: 1px solid rgba(174, 182, 206, 0.20);
+}
+
+.contextMenuWrap {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    padding-left: 57px;
+    padding-right: 36px;
 }

@@ -9,7 +9,12 @@ function App() {
     <Router>
       <div className={s.app}>
         <div className={s.topPaddingBlock}></div>
-        <DraggableTabs />
+        <div id='tabsContainer' className={s.dragableTabsContainer}>
+          <DraggableTabs />
+          <div id='contextMenuWrap' className={s.contextMenuWrap}>
+
+          </div>
+        </div>
       </div>
     </Router>
   )
