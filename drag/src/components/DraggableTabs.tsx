@@ -140,6 +140,8 @@ export const DraggableTabs = () => {
 
     const handleDragEnd = (result: any) => {
         const { source, destination } = result;
+        console.log(result);
+
 
         if (!destination) {
             return;
@@ -147,7 +149,7 @@ export const DraggableTabs = () => {
 
         const newRoutesListState = Array.from(routesListState);
         const [movedItem] = newRoutesListState.splice(source.index, 1);
-        newRoutesListState.splice(destination.index, 0, movedItem);
+        newRoutesListState.splice(destination.index <= count ? destination.index : count - 1, 0, movedItem);
 
         setRoutesListState(newRoutesListState);
     };
@@ -161,23 +163,22 @@ export const DraggableTabs = () => {
                 <Droppable droppableId="routesTabs" direction="horizontal">
                     {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef} className={s.routesTabsWrap} style={{ display: "flex", width: '100%' }}>
-                            {routesListState.map((routeInfo, index) => {
+                            {routesListState.slice(0, count).map((routeInfo, index) => {
 
                                 return (
-                                    <Draggable key={routeInfo.route} draggableId={routeInfo.route} index={index}>
+                                    !pinnedTabs.includes(routeInfo.route) ? <Draggable key={routeInfo.route} draggableId={routeInfo.route} index={index}>
                                         {(provided) => (
                                             <div
-                                                className={`${index >= count && s.hide}`}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                                 ref={provided.innerRef}
-                                                style={{...provided.draggableProps.style, flexGrow: 1 }}
+                                                style={{ ...provided.draggableProps.style, flexGrow: 1 }}
 
                                             >
                                                 <div
                                                     onContextMenu={(e) => handleRightClick(e, index)}
                                                     ref={(e) => linkRefs.current[index] = e}
-                                                    className={`${s.routeTab} ${index >= count && s.hide}`}
+                                                    className={`${s.routeTab} `}
                                                 >
                                                     <Link
                                                         className={`${s.routeLink} ${(pathname === `/${routeInfo.route.toLocaleLowerCase().replace(/\s+/g, '')}`) && s.setBorderTop}`}
@@ -218,6 +219,53 @@ export const DraggableTabs = () => {
                                             </div>
                                         )}
                                     </Draggable>
+                                        :
+                                        <div
+                                            style={{ flexGrow: 1 }}
+
+                                        >
+                                            <div
+                                                onContextMenu={(e) => handleRightClick(e, index)}
+                                                ref={(e) => linkRefs.current[index] = e}
+                                                className={`${s.routeTab} `}
+                                            >
+                                                <Link
+                                                    className={`${s.routeLink} ${(pathname === `/${routeInfo.route.toLocaleLowerCase().replace(/\s+/g, '')}`) && s.setBorderTop}`}
+                                                    to={`/${routeInfo.route.toLocaleLowerCase().replace(/\s+/g, '')}`}
+                                                >
+                                                    {routeInfo.svg}
+                                                    <p className={s.routeTabText}>{routeInfo.route}</p>
+                                                    {
+                                                        pinnedTabs.includes(routeInfo.route) &&
+                                                        <div className={s.pinnedWrap}>
+                                                            <PinnedSVG />
+                                                        </div>
+                                                    }
+                                                </Link>
+                                                <div onClick={() => {
+                                                    const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
+                                                    setRoutesListState(newRoutesList);
+                                                }} className={s.deleteTab}>
+                                                    <DeleteRedSVG />
+                                                </div>
+                                                {
+                                                    isContextMenuShowByNum !== null && createPortal(
+                                                        <div className={`${s.contextMenu} ${index >= count && s.hide}`}>
+                                                            <p className={s.hiddenContent}>{routeInfo.svg}{routeInfo.route}</p>
+                                                            {
+                                                                (index === isContextMenuShowByNum)
+                                                                &&
+                                                                <button onClick={() => handleSetPinnedTabs(routeInfo.route, index)} className={`${s.rightClickWrap} ${index === count - 1 && s.lastClickWrap}`}>
+                                                                    <PinSVG />
+                                                                    {!pinnedTabs.includes(routeInfo.route) ? <p>Tab anpinnen</p> : <p>Tab pinned</p>}
+                                                                </button>
+                                                            }
+                                                        </div>,
+                                                        document.getElementById('contextMenuWrap') || document.createElement('div')
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
                                 )
                             })}
                             {provided.placeholder}
