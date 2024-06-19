@@ -23,14 +23,26 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
     const { pathname } = useLocation();
 
+    const storedRoutesList: RoutesList[] = JSON.parse(localStorage.getItem('routesList') || '[]')
+        .map(({ route }: { route: string }) => {
+            return routesList.find((el) => el.route === route);
+        });
+
+    console.log(storedRoutesList, 'storedRoutesList');
+
+
+
     const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
-    const [routesListState, setRoutesListState] = useState<RoutesList[]>(routesList)
+    const [routesListState, setRoutesListState] = useState<RoutesList[]>(storedRoutesList.length ? storedRoutesList : routesList)
     const [count, setCount] = useState<number>(routesList.length);
-    const [pinnedTabs, setPinnedTabs] = useState<string[]>([]);
+    const [pinnedTabs, setPinnedTabs] = useState<string[]>(JSON.parse(localStorage.getItem('pinnedTabs') || '[]'));
     const [isContextMenuShowByNum, setIsContextMenuShowByNum] = useState<number | null>(null);
     const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
 
     const linkRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+    // console.log(routesListState);
+
 
     const handleRightClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
         e.preventDefault();
@@ -47,6 +59,9 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
             setRoutesListState(newChangedTabList);
             setPinnedTabs(newPinnedTabs);
+            
+            updateStorage(newChangedTabList, 'routesList');
+            updateStorage(newPinnedTabs, 'pinnedTabs');
         } else {
             const newPinnedTabs = [...pinnedTabs, tabName];
 
@@ -57,6 +72,9 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
             setRoutesListState(newChangedTabList);
             setPinnedTabs(newPinnedTabs);
+            
+            updateStorage(newChangedTabList, 'routesList');
+            updateStorage(newPinnedTabs, 'pinnedTabs');
         }
     }
 
@@ -128,11 +146,29 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         newRoutesListState.splice(destination.index <= count ? destination.index : count - 1, 0, movedItem);
 
         setRoutesListState(newRoutesListState);
+        
+        updateStorage(newRoutesListState, 'routesList')
 
         if (isTouchDevice) {
             setIsContextMenuShowByNum(destination.index);
         }
     };
+
+    const updateStorage = (arr: RoutesList[] | string[], storageName: string) => {
+        if(storageName === 'routesList') {
+            const routes = arr as RoutesList[];
+            localStorage.setItem(storageName, JSON.stringify(routes.map((({ route }) => {
+                return {
+                    route: route
+                }
+            }))));
+        }
+
+        if(storageName === 'pinnedTabs') {
+            const pinnedTabs = arr as string[];
+            localStorage.setItem(storageName, JSON.stringify(pinnedTabs));
+        }
+    }
 
     return (
         <div className={s.draggableTabsWrap}>
@@ -176,6 +212,9 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                                                     <div onClick={() => {
                                                         const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
                                                         setRoutesListState(newRoutesList);
+                                                        
+                                                        updateStorage(newRoutesList, 'routesList');
+
                                                     }} className={s.deleteTab}>
                                                         <DeleteRedSVG />
                                                     </div>
@@ -224,7 +263,11 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                                                 </Link>
                                                 <div onClick={() => {
                                                     const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
+                                                    handleSetPinnedTabs(routeInfo.route, index);
                                                     setRoutesListState(newRoutesList);
+                                                    
+                                                    updateStorage(newRoutesList, 'routesList');
+
                                                 }} className={s.deleteTab}>
                                                     <DeleteRedSVG />
                                                 </div>
@@ -268,16 +311,19 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                         <div className={s.dropdown}>
                             {routesListState.slice(count, routesListState.length).length ? routesListState.slice(count, routesListState.length).map((el) => {
                                 return (
-                                    <Link to={`/${el.route.toLocaleLowerCase().replace(/\s+/g, '')}`} className={s.dropdownRouteLink} key={el.route}>
-                                        {el.svg}
-                                        {el.route}
+                                    <div key={el.route} className={s.dropdownLinkWrap}>
+                                        <Link to={`/${el.route.toLocaleLowerCase().replace(/\s+/g, '')}`} className={s.dropdownRouteLink} key={el.route}>
+                                            {el.svg}
+                                            {el.route}
+                                        </Link>
                                         <div onClick={() => {
                                             const newRoutesList = routesListState.filter((e) => e.route !== el.route);
                                             setRoutesListState(newRoutesList)
+                                            updateStorage(newRoutesList, 'routesList');
                                         }} className={s.deleteDropdownRouteBtn}>
                                             <DeleteSVG />
                                         </div>
-                                    </Link>
+                                    </div>
                                 );
                             })
                                 :
