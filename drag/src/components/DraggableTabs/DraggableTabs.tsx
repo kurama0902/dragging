@@ -209,7 +209,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                                                             </div>
                                                         }
                                                     </Link>
-                                                    <div onClick={() => {
+                                                    {routesListState.length !== 1 && <div onClick={() => {
                                                         const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
                                                         setRoutesListState(newRoutesList);
                                                         
@@ -217,7 +217,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
                                                     }} className={s.deleteTab}>
                                                         <DeleteRedSVG />
-                                                    </div>
+                                                    </div>}
                                                     {
                                                         isContextMenuShowByNum !== null && createPortal(
                                                             <div className={`${s.contextMenu} ${index >= count && s.hide}`}>
