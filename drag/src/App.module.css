@@ -1,5 +1,8 @@
 .app {
+    display: flex;
+    flex-direction: column;
     padding-left: 62px;
+    height: 100vh;
 }
 
 .dragableTabsContainer {
@@ -17,4 +20,13 @@
     width: 100%;
     padding-left: 57px;
     padding-right: 36px;
+}
+
+.mainContent {
+    display: flex;
+    font-size: 50px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    border: 20px solid #F1F5F8;
 }

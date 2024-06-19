@@ -76,7 +76,7 @@
     border: none;
 }
 
-.dropdownRouteBtn {
+.dropdownRouteLink {
     display: flex;
     position: relative;
     align-items: center;
@@ -84,12 +84,17 @@
     background-color: transparent;
     border: none;
     border-bottom: 1px solid rgba(174, 182, 206, 0.20);
+    text-decoration: none;
     font-family: Poppins;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
     color: #7F858D;
     gap: 10px;
+}
+
+.dropdownRouteLink:hover {
+    color: #343434;
 }
 
 .deleteDropdownRouteBtn {

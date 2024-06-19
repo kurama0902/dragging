@@ -1,29 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLayoutEffect, useRef, useState } from "react";
 
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable, DragUpdate } from '@hello-pangea/dnd';
 
-import { ChestSVG } from "../SVGComponents/ChestSVG";
-import { DashboardSVG } from "../SVGComponents/DashboardSVG";
-import { BankingSVG } from "../SVGComponents/BankingSVG";
-import { PhoneSVG } from "../SVGComponents/PhoneSVG";
-import { AccountingSVG } from "../SVGComponents/AccountingSVG";
-import { VerkaufSVG } from "../SVGComponents/VerkaufSVG";
-import { StatistikSVG } from "../SVGComponents/StatistikSVG";
-import { PostOfficeSVG } from "../SVGComponents/PostOfficeSVG";
-import { AdministrationSVG } from "../SVGComponents/AdministrationSVG";
-import { HelpSVG } from "../SVGComponents/HelpSVG";
-import { WarenbestandSVG } from "../SVGComponents/WarenbestandSVG";
-import { AuswahllistenSVG } from "../SVGComponents/AuswahllistenSVG";
-import { EinkaufSVG } from "../SVGComponents/EinkaufSVG";
-import { RechnSVG } from "../SVGComponents/RechnSVG";
-import { DropdownArrowSVG } from "../SVGComponents/DropdownArrowSVG";
+import { ChestSVG } from "../../SVGComponents/ChestSVG";
+import { DropdownArrowSVG } from "../../SVGComponents/DropdownArrowSVG";
 
 import { createPortal } from "react-dom";
-import { DeleteSVG } from "../SVGComponents/DeleteSVG";
-import { DeleteRedSVG } from "../SVGComponents/DeleteRedSVG";
-import { PinSVG } from "../SVGComponents/PinSVG";
-import { PinnedSVG } from "../SVGComponents/PinnedSVG";
+import { DeleteSVG } from "../../SVGComponents/DeleteSVG";
+import { DeleteRedSVG } from "../../SVGComponents/DeleteRedSVG";
+import { PinSVG } from "../../SVGComponents/PinSVG";
+import { PinnedSVG } from "../../SVGComponents/PinnedSVG";
 
 import s from "./draggableTabs.module.css";
 
@@ -32,23 +19,7 @@ type RoutesList = {
     svg: JSX.Element;
 };
 
-const routesList: RoutesList[] = [
-    { route: "Dashboard", svg: <DashboardSVG /> },
-    { route: "Banking", svg: <BankingSVG /> },
-    { route: "Telefonie", svg: <PhoneSVG /> },
-    { route: "Accounting", svg: <AccountingSVG /> },
-    { route: "Verkauf", svg: <VerkaufSVG /> },
-    { route: "Statistik", svg: <StatistikSVG /> },
-    { route: "Post Office", svg: <PostOfficeSVG /> },
-    { route: "Administration", svg: <AdministrationSVG /> },
-    { route: "Help", svg: <HelpSVG /> },
-    { route: "Warenbestand", svg: <WarenbestandSVG /> },
-    { route: "Auswahllisten", svg: <AuswahllistenSVG /> },
-    { route: "Einkauf", svg: <EinkaufSVG /> },
-    { route: "Rechn", svg: <RechnSVG /> },
-];
-
-export const DraggableTabs = () => {
+export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
     const { pathname } = useLocation();
 
@@ -57,6 +28,7 @@ export const DraggableTabs = () => {
     const [count, setCount] = useState<number>(routesList.length);
     const [pinnedTabs, setPinnedTabs] = useState<string[]>([]);
     const [isContextMenuShowByNum, setIsContextMenuShowByNum] = useState<number | null>(null);
+    const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
 
     const linkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -126,22 +98,25 @@ export const DraggableTabs = () => {
         const handleCloseContextMenu = () => {
             setIsContextMenuShowByNum(null);
         }
+        const handleTouch = () => {
+            setIsTouchDevice(true);
+        }
 
         handleWindowWidthChange();
 
         window.addEventListener("resize", handleWindowWidthChange);
         window.addEventListener("click", handleCloseContextMenu);
+        window.addEventListener("touchstart", handleTouch);
 
         return () => {
             window.removeEventListener("resize", handleWindowWidthChange);
             window.addEventListener("click", handleCloseContextMenu);
+            window.addEventListener("touchstart", handleTouch);
         };
     }, []);
 
     const handleDragEnd = (result: any) => {
         const { source, destination } = result;
-        console.log(result);
-
 
         if (!destination) {
             return;
@@ -152,6 +127,10 @@ export const DraggableTabs = () => {
         newRoutesListState.splice(destination.index <= count ? destination.index : count - 1, 0, movedItem);
 
         setRoutesListState(newRoutesListState);
+
+        if (isTouchDevice) {
+            setIsContextMenuShowByNum(destination.index);
+        }
     };
 
     return (
@@ -159,7 +138,7 @@ export const DraggableTabs = () => {
             <div id="chest" className={s.chestWrap}>
                 <ChestSVG />
             </div>
-            <DragDropContext onDragEnd={handleDragEnd}>
+            <DragDropContext onDragStart={() => setIsContextMenuShowByNum(null)} onDragEnd={handleDragEnd}>
                 <Droppable droppableId="routesTabs" direction="horizontal">
                     {(provided) => (
                         <div {...provided.droppableProps} ref={provided.innerRef} className={s.routesTabsWrap} style={{ display: "flex", width: '100%' }}>
@@ -221,11 +200,11 @@ export const DraggableTabs = () => {
                                     </Draggable>
                                         :
                                         <div
+                                            key={routeInfo.route}
                                             style={{ flexGrow: 1 }}
 
                                         >
-                                            <div
-                                                onContextMenu={(e) => handleRightClick(e, index)}
+                                            <div onContextMenu={(e) => handleRightClick(e, index)}
                                                 ref={(e) => linkRefs.current[index] = e}
                                                 className={`${s.routeTab} `}
                                             >
@@ -288,7 +267,7 @@ export const DraggableTabs = () => {
                         <div className={s.dropdown}>
                             {routesListState.slice(count, routesListState.length).length ? routesListState.slice(count, routesListState.length).map((el) => {
                                 return (
-                                    <button className={s.dropdownRouteBtn} key={el.route}>
+                                    <Link to={`/${el.route.toLocaleLowerCase().replace(/\s+/g, '')}`} className={s.dropdownRouteLink} key={el.route}>
                                         {el.svg}
                                         {el.route}
                                         <div onClick={() => {
@@ -297,7 +276,7 @@ export const DraggableTabs = () => {
                                         }} className={s.deleteDropdownRouteBtn}>
                                             <DeleteSVG />
                                         </div>
-                                    </button>
+                                    </Link>
                                 );
                             })
                                 :
