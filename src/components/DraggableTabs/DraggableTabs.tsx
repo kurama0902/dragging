@@ -28,10 +28,6 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
             return routesList.find((el) => el.route === route);
         });
 
-    console.log(storedRoutesList, 'storedRoutesList');
-
-
-
     const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
     const [routesListState, setRoutesListState] = useState<RoutesList[]>(storedRoutesList.length ? storedRoutesList : routesList)
     const [count, setCount] = useState<number>(routesList.length);

@@ -10,7 +10,7 @@
 }
 
 .topPaddingBlock {
-    height: 69px;
+    min-height: 69px;
     border-left: 1px solid rgba(174, 182, 206, 0.20);
 }
 
