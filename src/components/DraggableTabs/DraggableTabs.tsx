@@ -41,8 +41,6 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
     const linkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    // console.log(routesListState);
-
 
     const handleRightClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
         e.preventDefault();
