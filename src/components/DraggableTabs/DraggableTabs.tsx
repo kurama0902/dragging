@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
@@ -76,7 +76,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         }
     }
 
-    useLayoutEffect(() => {
+    useEffect(() => {
         const linksWidthList = linkRefs.current
             .map((link) => {
                 if (link) {
