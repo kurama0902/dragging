@@ -61,7 +61,7 @@ const router = createBrowserRouter([
     ),
     children: routesList.map(({route}) => {
       return {
-        path: route.toLocaleLowerCase().replace(/\s+/g, ''),
+        path: "/" + route.toLocaleLowerCase().replace(/\s+/g, ''),
         element: <p>{route}</p>
       }
     }),
