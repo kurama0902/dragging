@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useLayoutEffect, useRef, useState } from "react";
 
-import { DragDropContext, Droppable, Draggable, DragUpdate } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 import { ChestSVG } from "../../SVGComponents/ChestSVG";
 import { DropdownArrowSVG } from "../../SVGComponents/DropdownArrowSVG";
@@ -97,6 +97,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
         const handleCloseContextMenu = () => {
             setIsContextMenuShowByNum(null);
+            setIsTouchDevice(false);
         }
         const handleTouch = () => {
             setIsTouchDevice(true);
