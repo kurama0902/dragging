@@ -117,6 +117,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
             if(flag) {
                 setCount(count - 1 || 1);
+                setFlag(false)
             } else {
                 setCount(count || 1);
             }
