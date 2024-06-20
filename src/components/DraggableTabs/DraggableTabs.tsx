@@ -30,10 +30,11 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
     const [isDropdownShow, setIsDropdownShow] = useState<boolean>(false);
     const [routesListState, setRoutesListState] = useState<RoutesList[]>(storedRoutesList.length ? storedRoutesList : routesList)
-    const [count, setCount] = useState<number>(routesList.length);
+    const [count, setCount] = useState<number>(storedRoutesList.length ? storedRoutesList.length - 1 : routesList.length - 1);
     const [pinnedTabs, setPinnedTabs] = useState<string[]>(JSON.parse(localStorage.getItem('pinnedTabs') || '[]'));
     const [isContextMenuShowByNum, setIsContextMenuShowByNum] = useState<number | null>(null);
     const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
+    const [flag, setFlag] = useState<boolean>(true);
 
     const linkRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -53,7 +54,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
             setRoutesListState(newChangedTabList);
             setPinnedTabs(newPinnedTabs);
-            
+
             updateStorage(newChangedTabList, 'routesList');
             updateStorage(newPinnedTabs, 'pinnedTabs');
         } else {
@@ -66,7 +67,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
             setRoutesListState(newChangedTabList);
             setPinnedTabs(newPinnedTabs);
-            
+
             updateStorage(newChangedTabList, 'routesList');
             updateStorage(newPinnedTabs, 'pinnedTabs');
         }
@@ -76,15 +77,24 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         const linksWidthList = linkRefs.current
             .map((link) => {
                 if (link) {
+                    console.log(link, 'link');
+                    console.log(link.getBoundingClientRect().width, 'link width');
+                    
                     return link.getBoundingClientRect().width;
                 }
                 return 0;
             })
             .filter((el) => el !== 0);
+            console.log(linksWidthList, 'list');
+            
+        console.log(linkRefs.current, 'refs links');
+
 
         const handleWindowWidthChange = () => {
+
             const chestSize = document.getElementById('chest')?.getBoundingClientRect().width;
             const dropdownBtnSize = document.getElementById('dropdownBtn')?.getBoundingClientRect().width;
+
 
             let windowSize = 0;
 
@@ -99,9 +109,10 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
 
 
             for (const width of linksWidthList) {
+
                 if (totalWidth + width >= windowSize) break;
                 totalWidth += width;
-                count++;
+                count++;                
             }
 
             setCount(count || 1);
@@ -116,17 +127,21 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         }
 
         handleWindowWidthChange();
-
+        if(flag) {
+            setFlag(false);
+        }
+        
+        
         window.addEventListener("resize", handleWindowWidthChange);
         window.addEventListener("click", handleCloseContextMenu);
         window.addEventListener("touchstart", handleTouch);
 
-        return () => {
+        () => {
             window.removeEventListener("resize", handleWindowWidthChange);
             window.addEventListener("click", handleCloseContextMenu);
             window.addEventListener("touchstart", handleTouch);
         };
-    }, []);
+    }, [flag]);
 
     const handleDragEnd = (result: any) => {
         const { source, destination } = result;
@@ -140,7 +155,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         newRoutesListState.splice(destination.index <= count ? destination.index : count - 1, 0, movedItem);
 
         setRoutesListState(newRoutesListState);
-        
+
         updateStorage(newRoutesListState, 'routesList')
 
         if (isTouchDevice) {
@@ -149,7 +164,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
     };
 
     const updateStorage = (arr: RoutesList[] | string[], storageName: string) => {
-        if(storageName === 'routesList') {
+        if (storageName === 'routesList') {
             const routes = arr as RoutesList[];
             localStorage.setItem(storageName, JSON.stringify(routes.map((({ route }) => {
                 return {
@@ -158,7 +173,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
             }))));
         }
 
-        if(storageName === 'pinnedTabs') {
+        if (storageName === 'pinnedTabs') {
             const pinnedTabs = arr as string[];
             localStorage.setItem(storageName, JSON.stringify(pinnedTabs));
         }
@@ -172,7 +187,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
             <DragDropContext onDragStart={() => setIsContextMenuShowByNum(null)} onDragEnd={handleDragEnd}>
                 <Droppable droppableId="routesTabs" direction="horizontal">
                     {(provided) => (
-                        <div {...provided.droppableProps} ref={provided.innerRef} className={s.routesTabsWrap} style={{ display: "flex", width: '100%' }}>
+                        <div {...provided.droppableProps} ref={provided.innerRef} id="routesTabWrap" className={s.routesTabsWrap} style={{ display: "flex", width: '100%' }}>
                             {routesListState.slice(0, count).map((routeInfo, index) => {
 
                                 return (
@@ -206,7 +221,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                                                     {routesListState.length !== 1 && <div onClick={() => {
                                                         const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
                                                         setRoutesListState(newRoutesList);
-                                                        
+
                                                         updateStorage(newRoutesList, 'routesList');
 
                                                     }} className={s.deleteTab}>
@@ -259,7 +274,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                                                     const newRoutesList = routesListState.filter((e) => e.route !== routeInfo.route);
                                                     handleSetPinnedTabs(routeInfo.route, index);
                                                     setRoutesListState(newRoutesList);
-                                                    
+
                                                     updateStorage(newRoutesList, 'routesList');
 
                                                 }} className={s.deleteTab}>

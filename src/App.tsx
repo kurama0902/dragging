@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 
 import s from './App.module.css'
+
 import { DashboardSVG } from './SVGComponents/DashboardSVG';
 import { BankingSVG } from './SVGComponents/BankingSVG';
 import { PhoneSVG } from './SVGComponents/PhoneSVG';
@@ -20,6 +21,8 @@ import { WarenbestandSVG } from './SVGComponents/WarenbestandSVG';
 import { AuswahllistenSVG } from './SVGComponents/AuswahllistenSVG';
 import { EinkaufSVG } from './SVGComponents/EinkaufSVG';
 import { RechnSVG } from './SVGComponents/RechnSVG';
+import { Preloader } from './components/Preloader/Preloader';
+import { useEffect, useState } from 'react';
 
 type RoutesList = {
   route: string;
@@ -46,27 +49,42 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      <div className={s.app}>
-        <div className={s.topPaddingBlock}></div>
-        <div id='tabsContainer' className={s.dragableTabsContainer}>
-          <DraggableTabs routesList={routesList} />
-          <div id='contextMenuWrap' className={s.contextMenuWrap}>
-
-          </div>
-        </div>
-        <div className={s.mainContent}>
-          <Outlet />
-        </div>
-      </div>
+      <AppContent />
     ),
-    children: routesList.map(({route}) => {      
+    children: routesList.map(({ route }) => {
       return {
-        path: "/" + route.toLocaleLowerCase().replace(/\s+/g, ''),
+        path: route.toLocaleLowerCase().replace(/\s+/g, ''),
         element: <p>{route}</p>
       }
     }),
   },
 ]);
+
+function AppContent() {
+  const [visibility, setVisibility] = useState<boolean>(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setVisibility(false);
+    }, 1000)
+  }, [])
+
+  return (
+    <div className={s.app}>
+      {visibility && <Preloader />}
+      <div className={s.topPaddingBlock}></div>
+      <div id='tabsContainer' className={s.dragableTabsContainer}>
+        <DraggableTabs routesList={routesList} />
+        <div id='contextMenuWrap' className={s.contextMenuWrap}>
+
+        </div>
+      </div>
+      <div className={s.mainContent}>
+        <Outlet />
+      </div>
+    </div>
+  )
+}
 
 function App() {
 
