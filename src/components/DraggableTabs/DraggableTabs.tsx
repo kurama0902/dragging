@@ -115,7 +115,11 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
                 count++;                
             }
 
-            setCount(count || 1);
+            if(flag) {
+                setCount(count - 1 || 1);
+            } else {
+                setCount(count || 1);
+            }
         };
 
         const handleCloseContextMenu = () => {
@@ -127,9 +131,6 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
         }
 
         handleWindowWidthChange();
-        if(flag) {
-            setFlag(false);
-        }
         
         
         window.addEventListener("resize", handleWindowWidthChange);
@@ -141,7 +142,7 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
             window.addEventListener("click", handleCloseContextMenu);
             window.addEventListener("touchstart", handleTouch);
         };
-    }, [flag]);
+    }, []);
 
     const handleDragEnd = (result: any) => {
         const { source, destination } = result;
