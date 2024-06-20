@@ -76,19 +76,12 @@ export const DraggableTabs = ({ routesList }: { routesList: RoutesList[] }) => {
     useEffect(() => {
         const linksWidthList = linkRefs.current
             .map((link) => {
-                if (link) {
-                    console.log(link, 'link');
-                    console.log(link.getBoundingClientRect().width, 'link width');
-                    
+                if (link) {  
                     return link.getBoundingClientRect().width;
                 }
                 return 0;
             })
-            .filter((el) => el !== 0);
-            console.log(linksWidthList, 'list');
-            
-        console.log(linkRefs.current, 'refs links');
-
+            .filter((el) => el !== 0);            
 
         const handleWindowWidthChange = () => {
 
